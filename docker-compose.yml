@@ -1,0 +1,40 @@
+version: "3.1"
+ 
+services:
+  tomcat:
+    image: biomesys-asistencia:4.0.28-tomcat8-jdk8-ubuntu16.04
+    volumes:
+      - ./tomcat-logs:/var/lib/tomcat8/logs
+    ports:
+      - 8888:8080
+    stdin_open: true
+    tty: true
+    container_name: biomesys_asistencia_app
+    depends_on:
+      - mssqlserver
+    restart: always
+    networks:
+        BiomesysAsistenciaNetwork:
+            ipv4_address: 172.18.0.113
+  mssqlserver:
+    image: biomesys-asistencia:sqlserver2017_14.0.3238.1-19-CU14
+    volumes:
+      - ./mssql-server-data:/var/opt/mssql/data
+      - ./mssql-server-logs:/var/opt/mssql/log
+    environment:
+      - ACCEPT_EULA=Y 
+      - SA_PASSWORD=zaqWE*123
+      - MSSQL_AGENT_ENABLED=True
+      - MSSQL_PID=Express
+    ports:
+      - 15789:1433
+    container_name: biomesys_asistencia_sql
+    restart: always
+    networks:
+        BiomesysAsistenciaNetwork:
+            ipv4_address: 172.18.0.114
+networks:
+  BiomesysAsistenciaNetwork:
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24
